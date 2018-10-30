@@ -93,7 +93,7 @@ class ImageUploadView(generic.View):
                     </script>""".format(ck_func_num))
 
         saved_path = self._save_file(request, uploaded_file)
-        if(str(saved_path).split('.')[1].lower() != 'gif'):
+        if(len(str(saved_path).split('.')) > 1 and str(saved_path).split('.')[1].lower() != 'gif'):
             self._create_thumbnail_if_needed(backend, saved_path)
         url = utils.get_media_url(saved_path)
 
@@ -131,7 +131,6 @@ class ImageUploadView(generic.View):
 
         else:
             saved_path = storage.save(filename, uploaded_file)
-
         return saved_path
 
     @staticmethod
