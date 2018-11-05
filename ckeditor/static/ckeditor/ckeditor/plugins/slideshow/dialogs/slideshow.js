@@ -873,10 +873,10 @@ CKEDITOR.dialog.add('slideshowDialog', function(editor) {
 			liObj = ulObj.append('li');
 			liObj.setAttribute('contenteditable', 'false');
 			aObj = liObj.append('a');
-			aObj.setAttribute('href', removeDomainFromUrl(dialog.imagesList[i][IMG_PARAM.URL]));
+			aObj.setAttribute('href', dialog.imagesList[i][IMG_PARAM.URL]);
 			aObj.setAttribute('contenteditable', 'false');
 			newImgDOM = aObj.append('img');
-			newImgDOM.setAttribute('src', removeDomainFromUrl(dialog.imagesList[i][IMG_PARAM.URL]));
+			newImgDOM.setAttribute('src', dialog.imagesList[i][IMG_PARAM.URL]);
 			newImgDOM.setAttribute('title', dialog.imagesList[i][IMG_PARAM.TITLE]);
 			newImgDOM.setAttribute('alt', dialog.imagesList[i][IMG_PARAM.ALT]);
 			newImgDOM.setAttribute('contenteditable', 'false');
@@ -954,7 +954,7 @@ CKEDITOR.dialog.add('slideshowDialog', function(editor) {
       xhr.send(formData);
       xhr.onload = function() {
         var data = JSON.parse(this.responseText);
-				editor.insertHtml(`<p>!?!../../../../../../..${data.url}:${width},${height}!?!</p><br />`);
+				editor.insertHtml(`<p>!?!${data.url}:${width},${height}!?!</p><br />`);
       }
     }
 
