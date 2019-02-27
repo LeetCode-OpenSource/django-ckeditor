@@ -14,8 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
 
 from ckeditor_uploader import image_processing, utils
-from ckeditor_uploader.forms import SearchForm
 from ckeditor_uploader.utils import storage
+from ckeditor_uploader.forms import SearchForm
 
 
 def _get_user_path(user):
@@ -88,8 +88,7 @@ class ImageUploadView(generic.View):
             except utils.NotAnImageException:
                 return HttpResponse("""
                     <script type='text/javascript'>
-                    window.parent.CKEDITOR.tools.callFunction({0}, '',
-                    'Invalid file type.');
+                    window.parent.CKEDITOR.tools.callFunction({0}, '', 'Invalid file type.');
                     </script>""".format(ck_func_num))
 
         saved_path = self._save_file(request, uploaded_file)
@@ -131,6 +130,7 @@ class ImageUploadView(generic.View):
 
         else:
             saved_path = storage.save(filename, uploaded_file)
+
         return saved_path
 
     @staticmethod
