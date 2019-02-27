@@ -1,6 +1,24 @@
 Changelog
 =========
 
+5.6.1
+-----
+#. Fix bad pypi package
+
+
+5.6.0
+-----
+#. Django 2.1 compatibility, minimal supported Django version is 1.11 LTS
+#. Option to set custom django file backend for CKEditor uploader app.
+
+
+5.5.0
+-----
+#. CKEditor 4.9.2
+#. Documentation improvements
+#. Allow non-string properties of user for CKEDITOR_RESTRICT_BY_USER
+
+
 5.4.0
 -----
 #. Django 2.0 compatibility

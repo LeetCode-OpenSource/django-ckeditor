@@ -4,12 +4,12 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
-from django.template.loader import render_to_string
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
+from django.forms.widgets import get_default_renderer
 
 from js_asset import JS, static
 
@@ -57,25 +57,17 @@ class CKEditorWidget(forms.Textarea):
     Supports direct image uploads and embed.
     """
     class Media:
-        js = ()
-        try:
-            js += (
-                JS('ckeditor/ckeditor-init.js', {
-                    'id': 'ckeditor-init-script',
-                    'data-ckeditor-basepath': getattr(
-                        settings,
-                        'CKEDITOR_BASEPATH',
-                        static('ckeditor/ckeditor/'),
-                    ),
-                }),
-                'ckeditor/ckeditor/ckeditor.js',
-            )
-        except AttributeError:
-            raise ImproperlyConfigured("django-ckeditor requires \
-                    CKEDITOR_MEDIA_PREFIX setting. This setting specifies a \
-                    URL prefix to the ckeditor JS and CSS media (not \
-                    uploaded media). Make sure to use a trailing slash: \
-                    CKEDITOR_MEDIA_PREFIX = '/media/ckeditor/'")
+        js = (
+            JS('ckeditor/ckeditor-init.js', {
+                'id': 'ckeditor-init-script',
+                'data-ckeditor-basepath': getattr(
+                    settings,
+                    'CKEDITOR_BASEPATH',
+                    static('ckeditor/ckeditor/'),
+                ),
+            }),
+            'ckeditor/ckeditor/ckeditor.js',
+        )
 
     def __init__(self, config_name='default', extra_plugins=None, external_plugin_resources=None, *args, **kwargs):
         super(CKEditorWidget, self).__init__(*args, **kwargs)
@@ -111,7 +103,9 @@ class CKEditorWidget(forms.Textarea):
 
         self.external_plugin_resources = external_plugin_resources or []
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
+        if renderer is None:
+            renderer = get_default_renderer()
         if value is None:
             value = ''
         final_attrs = self.build_attrs(self.attrs, attrs, name=name)
@@ -119,7 +113,7 @@ class CKEditorWidget(forms.Textarea):
         external_plugin_resources = [[force_text(a), force_text(b), force_text(c)]
                                      for a, b, c in self.external_plugin_resources]
 
-        return mark_safe(render_to_string('ckeditor/widget.html', {
+        return mark_safe(renderer.render('ckeditor/widget.html', {
             'final_attrs': flatatt(final_attrs),
             'value': conditional_escape(force_text(value)),
             'id': final_attrs['id'],

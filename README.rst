@@ -13,7 +13,7 @@ Provides a ``RichTextField``, ``RichTextUploadingField``, ``CKEditorWidget`` and
 This version also includes:
 
 #. support to django-storages (works with S3)
-#. updated ckeditor to version 4.7
+#. updated ckeditor to version 4.9
 #. included all ckeditor language and plugin files to made everyone happy! ( `only the plugins maintained by the ckeditor develops team <https://github.com/ckeditor/ckeditor-dev/tree/4.6.2/plugins>`__ )
 
 .. contents:: Contents
@@ -34,19 +34,23 @@ Required
 #. Run the ``collectstatic`` management command: ``$ ./manage.py collectstatic``. This will copy static CKEditor required media resources into the directory given by the ``STATIC_ROOT`` setting. See `Django's documentation on managing static files <https://docs.djangoproject.com/en/dev/howto/static-files>`__ for more info.
 
 #. CKEditor needs to know where its assets are located because it loads them
-   lazily only when needed. The location is determined by looking at a script
-   tag which includes a URL ending in ``ckeditor.js``. This does not work all
+   lazily only when needed. The location is determined in the ``ckeditor-init.js``
+   script. and defaults to ``static/ckeditor/ckeditor/``. This does not work all
    the time, for example when using ``ManifestStaticFilesStorage``, any asset
-   packaging pipeline or whatnot. django-ckeditor is quite good at
-   automatically detecting the correct place even then, but sometimes you have
-   to hardcode ``CKEDITOR_BASEPATH`` somewhere. It is recommended to override
-   the ``admin/base_site.html`` template with your own if you really need to do
+   packaging pipeline or whatnot. django-ckeditor is quite good at automatically
+   detecting the correct place even then, but sometimes you have to hardcode
+   ``CKEDITOR_BASEPATH`` somewhere. This can be hardcoded in settings, i.e.::
+
+        CKEDITOR_BASEPATH = "/my_static/ckeditor/ckeditor"
+
+   It is possible to override
+   the ``admin/change_form.html`` template with your own if you really need to do
    this, i.e.::
 
-        {% extends "admin/base_site.html" %}
+        {% extends "admin/change_form.html" %}
 
         {% block extrahead %}
-        <script>window.CKEDITOR_BASEPATH = '/static/ckeditor/ckeditor/';</script>
+        <script>window.CKEDITOR_BASEPATH = '/my_static/ckeditor/ckeditor/';</script>
         {{ block.super }}
         {% endblock %}
 
@@ -92,6 +96,7 @@ Required for using widget with file upload
 #. Set ``CKEDITOR_IMAGE_BACKEND`` to one of the supported backends to enable thumbnails in ckeditor gallery. By default no thumbnails are created and full size images are used as preview. Supported backends:
 
    - ``pillow``: Uses Pillow
+
 
 
 Optional - customizing CKEditor editor
@@ -165,6 +170,8 @@ Optional for file upload
 
 #. Set the ``CKEDITOR_RESTRICT_BY_DATE`` setting to ``True`` to bucked uploaded files by year/month/day.
 
+#. You can set a custom file storage for CKEditor uploader by defining it under ``CKEDITOR_STORAGE_BACKEND`` variable in settings.
+
 
 Usage
 -----
@@ -222,6 +229,7 @@ or you can load the media manually as it is done in the demo app::
     <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
     <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
 
+When you need to render ``RichTextField``'s HTML output in your templates safely, just use ``{{ content|safe }}``,  `Django's safe filter <https://docs.djangoproject.com/en/2.0/ref/templates/builtins/#std:templatefilter-safe>`_
 
 
 Management Commands
